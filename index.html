@@ -1,119 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Image Search Gallery</title>
     <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
         :root {
-            --primary-color: #4a6cf7;
-            --secondary-color: #6c757d;
-            --dark-color: #1d2144;
-            --light-bg: #f8f9fa;
-            --card-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            --hover-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --accent: #4cc9f0;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --bg-gradient: linear-gradient(135deg, #f0f4ff 0%, #e6edff 100%);
+            --card-bg: #ffffff;
+            --shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 12px 30px rgba(67, 97, 238, 0.25);
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            background-color: #f0f2f5;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-gradient);
+            font-family: 'Segoe UI', system-ui, sans-serif;
             min-height: 100vh;
             padding: 20px;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4eaf1 100%);
+            color: var(--dark);
         }
-        
+
         .container {
             max-width: 1200px;
         }
-        
+
         .header {
             text-align: center;
-            margin-bottom: 40px;
-            padding: 30px 20px;
+            margin-bottom: 30px;
+            padding: 25px 0;
         }
-        
+
         .title {
-            font-size: 2.8rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--primary-color), #6a11cb);
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(120deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
             margin-bottom: 10px;
         }
-        
+
         .subtitle {
-            font-size: 1.2rem;
-            color: var(--secondary-color);
+            color: var(--gray);
+            font-size: 1.1rem;
             max-width: 600px;
             margin: 0 auto;
+            line-height: 1.6;
         }
-        
-        .search-container {
-            max-width: 700px;
-            margin: 0 auto 40px;
-            padding: 25px;
-            background: white;
+
+        .search-section {
+            background: var(--card-bg);
             border-radius: 20px;
-            box-shadow: var(--card-shadow);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
             position: relative;
         }
-        
-        .search-box {
+
+        .input-group {
             position: relative;
-            margin-bottom: 15px;
+            max-width: 600px;
+            margin: 0 auto 20px;
         }
-        
+
+        .search-input {
+            padding-left: 50px;
+            height: 60px;
+            border-radius: 50px;
+            border: 2px solid #e9ecef;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            background-color: #f9fafc;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.2);
+            background-color: white;
+            outline: none;
+        }
+
         .search-icon {
             position: absolute;
             left: 20px;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--secondary-color);
+            color: var(--gray);
             font-size: 1.2rem;
         }
-        
-        .search-input {
-            padding: 15px 20px 15px 60px;
-            border-radius: 50px;
-            height: 60px;
-            font-size: 1.1rem;
-            border: 2px solid #e9ecef;
-            transition: all 0.3s;
-            background: #f8f9fa;
-        }
-        
-        .search-input:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.25rem rgba(74, 108, 247, 0.25);
-            background: white;
-        }
-        
-        .search-btn {
-            border-radius: 50px;
-            padding: 12px 35px;
-            font-weight: 600;
-            background: linear-gradient(135deg, var(--primary-color), #6a11cb);
-            border: none;
-            transition: all 0.3s;
-            font-size: 1.1rem;
-            box-shadow: 0 4px 15px rgba(74, 108, 247, 0.4);
-        }
-        
-        .search-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(74, 108, 247, 0.6);
-        }
-        
+
         .clear-search {
             position: absolute;
             right: 20px;
@@ -121,217 +113,224 @@
             transform: translateY(-50%);
             background: none;
             border: none;
-            color: var(--secondary-color);
+            color: var(--gray);
             cursor: pointer;
             font-size: 1.2rem;
             display: none;
         }
-        
-        .search-box:hover .clear-search {
-            display: block;
+
+        .btn-group-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
         }
-        
-        .image-container {
-            margin: 0 auto;
-        }
-        
-        .image-card {
-            margin-bottom: 25px;
-            transition: all 0.4s;
+
+        .btn-primary {
+            background: linear-gradient(120deg, var(--primary), var(--secondary));
             border: none;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: var(--card-shadow);
-            background: white;
-            cursor: pointer;
-            height: 100%;
-        }
-        
-        .image-card:hover {
-            transform: translateY(-10px);
-            box-shadow: var(--hover-shadow);
-        }
-        
-        .card-img-top {
-            height: 220px;
-            object-fit: cover;
-            transition: transform 0.5s;
-        }
-        
-        .image-card:hover .card-img-top {
-            transform: scale(1.08);
-        }
-        
-        .card-body {
-            padding: 20px;
-        }
-        
-        .card-title {
-            font-weight: 700;
-            color: var(--dark-color);
-            margin-bottom: 8px;
-            font-size: 1.2rem;
-        }
-        
-        .card-text {
-            color: var(--secondary-color);
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-        
-        .no-results {
-            text-align: center;
-            padding: 80px 20px;
-            color: var(--secondary-color);
-        }
-        
-        .no-results i {
-            font-size: 5rem;
-            margin-bottom: 25px;
-            color: #dee2e6;
-            opacity: 0.7;
-        }
-        
-        .no-results h3 {
+            padding: 10px 28px;
             font-weight: 600;
-            margin-bottom: 15px;
-            color: var(--dark-color);
+            font-size: 1rem;
+            border-radius: 50px;
+            box-shadow: 0 4px 14px rgba(67, 97, 238, 0.3);
+            transition: all 0.3s ease;
         }
-        
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(67, 97, 238, 0.45);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 10px 28px;
+            font-weight: 600;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline:hover {
+            background: rgba(67, 97, 238, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .results-info {
+            text-align: center;
+            margin: 20px 0;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 1.1rem;
+        }
+
         .loading-spinner {
             display: none;
             text-align: center;
-            margin: 50px 0;
+            margin: 40px 0;
         }
-        
+
         .spinner-border {
-            width: 3.5rem;
-            height: 3.5rem;
-            color: var(--primary-color);
+            width: 3rem;
+            height: 3rem;
+            border-width: 0.3em;
+            color: var(--primary);
         }
-        
-        .results-info {
-            text-align: center;
-            margin-bottom: 25px;
-            color: var(--dark-color);
-            font-size: 1.1rem;
-            font-weight: 500;
+
+        .image-card {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: all 0.4s ease;
+            height: 100%;
+            background: white;
+            border: none;
+            cursor: pointer;
         }
-        
-        .footer {
-            text-align: center;
-            margin-top: 60px;
-            padding: 25px;
-            color: var(--secondary-color);
+
+        .image-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .card-img-top {
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .image-card:hover .card-img-top {
+            transform: scale(1.05);
+        }
+
+        .card-body {
+            padding: 18px;
+        }
+
+        .card-title {
+            font-weight: 700;
+            font-size: 1.15rem;
+            color: var(--dark);
+            margin-bottom: 6px;
+        }
+
+        .card-text {
+            color: var(--gray);
             font-size: 0.95rem;
-            border-top: 1px solid rgba(0,0,0,0.05);
         }
-        
-        .welcome-message {
+
+        .no-results, .welcome-message {
             text-align: center;
-            padding: 80px 20px;
-            color: var(--secondary-color);
+            padding: 70px 20px;
+            color: var(--gray);
         }
-        
-        .welcome-message i {
+
+        .no-results i, .welcome-message i {
             font-size: 5rem;
             margin-bottom: 25px;
-            color: var(--primary-color);
-            opacity: 0.8;
+            opacity: 0.7;
         }
-        
-        .welcome-message h3 {
+
+        .no-results i {
+            color: #e0e0e0;
+        }
+
+        .welcome-message i {
+            color: var(--primary);
+            opacity: 0.9;
+        }
+
+        .no-results h3, .welcome-message h3 {
             font-weight: 700;
+            color: var(--dark);
             margin-bottom: 15px;
-            color: var(--dark-color);
             font-size: 1.8rem;
         }
-        
-        .welcome-message p {
-            font-size: 1.1rem;
+
+        .no-results p, .welcome-message p {
             max-width: 500px;
             margin: 0 auto;
             line-height: 1.6;
+            font-size: 1.05rem;
         }
-        
-        .modal-image {
-            width: 100%;
-            border-radius: 12px;
-            max-height: 70vh;
-            object-fit: contain;
+
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 25px 0;
+            color: var(--gray);
+            font-size: 0.95rem;
+            border-top: 1px solid rgba(0,0,0,0.05);
         }
-        
+
+        /* Modal */
         .modal-content {
             border-radius: 20px;
             border: none;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
         }
-        
+
         .modal-header {
-            border-bottom: 1px solid #e9ecef;
-            padding: 20px 25px;
-            background: var(--dark-color);
+            background: var(--secondary);
             color: white;
+            border-bottom: none;
+            padding: 20px 25px;
         }
-        
+
         .modal-body {
             padding: 25px;
         }
-        
-        .modal-footer {
-            border-top: 1px solid #e9ecef;
-            padding: 20px 25px;
+
+        .modal-image {
+            max-height: 70vh;
+            width: 100%;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
         }
-        
-        .btn-close {
-            filter: invert(1);
-        }
-        
+
         @media (max-width: 768px) {
+            .btn-group-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
             .title {
-                font-size: 2.2rem;
+                font-size: 2rem;
             }
-            
-            .search-container {
-                padding: 20px;
-            }
-            
-            .search-input {
-                height: 55px;
-            }
-        }
-        
-        .image-counter {
-            background: linear-gradient(135deg, var(--primary-color), #6a11cb);
-            color: white;
-            border-radius: 50px;
-            padding: 8px 20px;
-            font-size: 0.95rem;
-            display: inline-block;
-            margin-bottom: 15px;
-            font-weight: 500;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1 class="title">Search Image</h1>
-            <p class="subtitle">Find your images with powerful search</p>
+            <h1 class="title">Image Search Gallery</h1>
+            <p class="subtitle">Search or browse your collection of high-quality images</p>
         </div>
 
-        <div class="search-container">
-            <div class="search-box">
+        <div class="search-section">
+            <div class="input-group">
                 <i class="fas fa-search search-icon"></i>
-                <input type="text" id="searchInput" class="form-control search-input" placeholder="search the image">
+                <input
+                    type="text"
+                    id="searchInput"
+                    class="form-control search-input"
+                    placeholder="Search by name or description..."
+                />
                 <button class="clear-search" id="clearSearch">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="text-center">
-                <button id="searchBtn" class="btn btn-primary search-btn">
-                    <i class="fas fa-search me-2"></i>Search Images
+            <div class="btn-group-actions">
+                <button id="searchBtn" class="btn btn-primary">
+                    <i class="fas fa-search me-2"></i>Search
+                </button>
+                <button id="showAllBtn" class="btn btn-outline">
+                    <i class="fas fa-th-large me-2"></i>View All Images
                 </button>
             </div>
         </div>
@@ -340,25 +339,24 @@
             <div class="spinner-border" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
-            <p class="mt-3">Searching our image collection...</p>
+            <p class="mt-3">Searching images...</p>
         </div>
 
         <div class="results-info" id="resultsInfo"></div>
 
         <div class="image-container">
             <div class="row g-4" id="imageResults">
-                <!-- Welcome message - images will be displayed after search -->
-                
+                <!-- Will be populated by JS -->
             </div>
         </div>
 
         <div class="footer">
-            <p>Image Search Gallery &copy; 2023 | Premium Image Collection</p>
+            <p>Image Search Gallery &copy; 2025 | Your Personal Media Library</p>
         </div>
     </div>
 
     <!-- Image Modal -->
-    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -366,11 +364,11 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center">
-                    <img id="modalImage" src="" alt="" class="modal-image">
-                    <h5 id="modalTitle" class="mt-4"></h5>
-                    <p id="modalDescription" class="text-muted mt-2"></p>
+                    <img id="modalImage" src="" alt="" class="modal-image" />
+                    <h5 class="mt-4" id="modalTitle"></h5>
+                    <p class="text-muted mt-2" id="modalDescription"></p>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer justify-content-center">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <a id="downloadLink" href="#" class="btn btn-primary" download>
                         <i class="fas fa-download me-2"></i>Download
@@ -380,11 +378,11 @@
         </div>
     </div>
 
-    <!-- Bootstrap 5 JS Bundle with Popper -->
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <script>
-        // Sample image data
+        // Image data
         const imageData = [
             { 
                 id: 1, 
@@ -412,13 +410,13 @@
             },
             { 
                 id: 5, 
-                name: "Sunrise Laxmi Bankr", 
+                name: "Sunrise Laxmi Bank", 
                 description: "QR",
                 url: "https://www.dropbox.com/scl/fi/b3dikb5tlezgwb36jqtis/QR_sunrise.jpg?rlkey=92pzxoh9pfrfb9ywxmzk0mul5&dl=1" 
             },
             { 
                 id: 6, 
-                name: "Cow Milk ", 
+                name: "Cow Milk", 
                 description: "QR-Esewa",
                 url: "https://www.dropbox.com/scl/fi/dzg6eooicwqchwsixbjgg/cwmlk.jpg?rlkey=lerjexquhcvcdv4vmlzwepl7z&dl=1" 
             },
@@ -436,158 +434,147 @@
             }
         ];
 
-        // Function to reset the page to initial state
-        function resetPage() {
-            const imageResults = document.getElementById('imageResults');
-            const resultsInfo = document.getElementById('resultsInfo');
-            
+        // DOM Elements
+        const imageResults = document.getElementById('imageResults');
+        const resultsInfo = document.getElementById('resultsInfo');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const searchInput = document.getElementById('searchInput');
+        const clearSearchBtn = document.getElementById('clearSearch');
+
+        // Show welcome message on load
+        function showWelcome() {
             imageResults.innerHTML = `
                 <div class="col-12">
                     <div class="welcome-message">
-                        <i class="fas fa-image"></i>
-                        <h3>Find Your Perfect Image</h3>
-                        <p>Use the search box to explore our collection of high-quality images</p>
+                        <i class="fas fa-images"></i>
+                        <h3>Explore Your Image Collection</h3>
+                        <p>Search by keyword or click <strong>“View All Images”</strong> to see everything.</p>
                     </div>
                 </div>
             `;
             resultsInfo.textContent = '';
         }
 
-        // Function to display images
+        // Display images
         function displayImages(images, searchTerm = '') {
-            const imageResults = document.getElementById('imageResults');
-            const resultsInfo = document.getElementById('resultsInfo');
             imageResults.innerHTML = '';
-            
+
             if (images.length === 0) {
                 imageResults.innerHTML = `
                     <div class="col-12">
                         <div class="no-results">
                             <i class="far fa-folder-open"></i>
-                            <h3>No images found</h3>
-                            <p>Try searching with different keywords</p>
+                            <h3>No Matching Images</h3>
+                            <p>Try a different keyword or view all images.</p>
                         </div>
                     </div>
                 `;
                 resultsInfo.textContent = '';
                 return;
             }
-            
-            // Update results info
+
+            // Update result info
             if (searchTerm) {
-                resultsInfo.textContent = `Found ${images.length} results for "${searchTerm}"`;
+                resultsInfo.textContent = `Found ${images.length} result${images.length !== 1 ? 's' : ''} for "${searchTerm}"`;
             } else {
                 resultsInfo.textContent = `Showing all ${images.length} images`;
             }
-            
-            // Display images
-            images.forEach(image => {
+
+            // Render cards
+            images.forEach(img => {
                 const col = document.createElement('div');
                 col.className = 'col-md-6 col-lg-4 col-xl-3';
                 col.innerHTML = `
-                    <div class="card image-card h-100" data-image-id="${image.id}">
-                        <img src="${image.url}" class="card-img-top" alt="${image.name}">
+                    <div class="card image-card h-100" data-id="${img.id}">
+                        <img src="${img.url}" class="card-img-top" alt="${img.name}" 
+                            onerror="this.src='https://via.placeholder.com/300x200?text=Image+Not+Found'; this.onerror=null;">
                         <div class="card-body">
-                            <h5 class="card-title">${image.name}</h5>
-                            <p class="card-text">${image.description}</p>
+                            <h6 class="card-title">${img.name}</h6>
+                            <p class="card-text">${img.description}</p>
                         </div>
                     </div>
                 `;
                 imageResults.appendChild(col);
             });
-            
-            // Add click event listeners to all image cards
+
+            // Attach click listeners
             document.querySelectorAll('.image-card').forEach(card => {
-                card.addEventListener('click', function() {
-                    const imageId = this.getAttribute('data-image-id');
-                    const image = imageData.find(img => img.id == imageId);
-                    if (image) {
-                        showImageModal(image);
-                    }
+                card.addEventListener('click', () => {
+                    const id = card.getAttribute('data-id');
+                    const img = imageData.find(i => i.id == id);
+                    if (img) showModal(img);
                 });
             });
         }
 
-        // Function to show image in modal
-        function showImageModal(image) {
-            const modalImage = document.getElementById('modalImage');
-            const modalTitle = document.getElementById('imageModalLabel');
-            const modalDescription = document.getElementById('modalDescription');
+        // Show modal
+        function showModal(img) {
+            const modalImg = document.getElementById('modalImage');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalDesc = document.getElementById('modalDescription');
             const downloadLink = document.getElementById('downloadLink');
-            
-            modalImage.src = image.url;
-            modalImage.alt = image.name;
-            modalTitle.textContent = image.name;
-            modalDescription.textContent = image.description;
-            downloadLink.href = image.url;
-            downloadLink.download = image.name.replace(/\s+/g, '-').toLowerCase() + '.jpg';
-            
-            const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
-            imageModal.show();
+
+            // Set modal content
+            modalImg.src = img.url;
+            modalImg.alt = img.name;
+            modalTitle.textContent = img.name;
+            modalDesc.textContent = img.description;
+
+            // Smart filename for download
+            const url = new URL(img.url);
+            let filename = url.pathname.split('/').pop().split('?')[0];
+            if (!filename.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+                filename = img.name.replace(/\s+/g, '-') + '.jpg';
+            }
+            downloadLink.href = img.url;
+            downloadLink.download = filename;
+
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+            modal.show();
         }
 
-        // Function to search images
-        function searchImages() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
-            const loadingSpinner = document.getElementById('loadingSpinner');
-            
-            // Show loading spinner
+        // Search logic
+        function handleSearch() {
+            const term = searchInput.value.trim().toLowerCase();
             loadingSpinner.style.display = 'block';
-            
-            // Simulate API delay
+
             setTimeout(() => {
-                if (searchTerm === '') {
-                    // If search is empty, reset the page
-                    resetPage();
+                if (!term) {
+                    showWelcome();
                 } else {
-                    // Filter images based on search term
-                    const filteredImages = imageData.filter(image => 
-                        image.name.toLowerCase().includes(searchTerm) || 
-                        image.description.toLowerCase().includes(searchTerm)
+                    const filtered = imageData.filter(img =>
+                        img.name.toLowerCase().includes(term) ||
+                        img.description.toLowerCase().includes(term)
                     );
-                    displayImages(filteredImages, searchTerm);
+                    displayImages(filtered, term);
                 }
-                
-                // Hide loading spinner
                 loadingSpinner.style.display = 'none';
-            }, 800);
+            }, 600);
         }
 
-        // Event listeners
-        document.getElementById('searchBtn').addEventListener('click', searchImages);
-        
-        document.getElementById('searchInput').addEventListener('keyup', function(event) {
-            if (event.key === 'Enter') {
-                searchImages();
-            }
-            
-            // Reset page if search box is empty
-            if (this.value.trim() === '') {
-                resetPage();
-            }
+        // Event Listeners
+        document.getElementById('searchBtn').addEventListener('click', handleSearch);
+        document.getElementById('showAllBtn').addEventListener('click', () => {
+            displayImages([...imageData]);
         });
 
-        // Clear search functionality
-        document.getElementById('clearSearch').addEventListener('click', function() {
-            document.getElementById('searchInput').value = '';
-            resetPage();
-            this.style.display = 'none';
+        searchInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') handleSearch();
         });
 
-        // Show/hide clear button based on input
-        document.getElementById('searchInput').addEventListener('input', function() {
-            const clearButton = document.getElementById('clearSearch');
-            if (this.value.trim() !== '') {
-                clearButton.style.display = 'block';
-            } else {
-                clearButton.style.display = 'none';
-            }
+        clearSearchBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            showWelcome();
+            clearSearchBtn.style.display = 'none';
         });
 
-        // Reset page on initial load
-        window.addEventListener('DOMContentLoaded', () => {
-            resetPage();
+        searchInput.addEventListener('input', () => {
+            clearSearchBtn.style.display = searchInput.value.trim() ? 'block' : 'none';
         });
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', showWelcome);
     </script>
 </body>
 </html>
