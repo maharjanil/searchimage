@@ -88,6 +88,8 @@
             font-size: 1.1rem;
             transition: all 0.3s ease;
             background-color: #f9fafc;
+            position: relative;
+            z-index: 2;
         }
 
         .search-input:focus {
@@ -104,6 +106,7 @@
             transform: translateY(-50%);
             color: var(--gray);
             font-size: 1.2rem;
+            z-index: 3;
         }
 
         .clear-search {
@@ -117,6 +120,7 @@
             cursor: pointer;
             font-size: 1.2rem;
             display: none;
+            z-index: 3;
         }
 
         .btn-group-actions {
@@ -290,6 +294,31 @@
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
         }
 
+        /* Suggestions Dropdown */
+        .suggestion-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            font-size: 0.95rem;
+        }
+        .suggestion-item:hover, .suggestion-item.selected {
+            background-color: #e0e7ff !important;
+            color: var(--primary);
+        }
+        .suggestion-title {
+            font-weight: 600;
+        }
+        .suggestion-desc {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+        mark {
+            background-color: #fff3cd;
+            color: #000;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+
         @media (max-width: 768px) {
             .btn-group-actions {
                 flex-direction: column;
@@ -309,7 +338,7 @@
     <div class="container">
         <div class="header">
             <h1 class="title">Image Search Gallery</h1>
-            <p class="subtitle">Search or browse your collection of  images</p>
+            <p class="subtitle">Search or browse your collection of images</p>
         </div>
 
         <div class="search-section">
@@ -324,6 +353,8 @@
                 <button class="clear-search" id="clearSearch">
                     <i class="fas fa-times"></i>
                 </button>
+                <div id="suggestions" class="position-absolute bg-white border rounded shadow mt-1 w-100" 
+                     style="top: 100%; display: none; max-height: 300px; overflow-y: auto; z-index: 1000;"></div>
             </div>
             <div class="btn-group-actions">
                 <button id="searchBtn" class="btn btn-primary">
@@ -385,20 +416,17 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        // Image data
+        // ✅ FIXED DROPBOX DIRECT LINKS (dl.dropboxusercontent.com)
         const imageData = [
-            { 
-                id: 1, 
+            {   id: 1, 
                 name: "Citizenship", 
-                description: "Front View | Number:- 28-01-065-02165",
-                url: "https://dl.dropboxusercontent.com/scl/fi/isx1t8tpvnp5pwxxalze1/front.jpg?rlkey=9143n6wfcgw359zvjzwicz8ol&dl=1" 
-            },
-            { 
-                id: 2, 
+                description: "Front View | Number:- 28-01-065-02165", 
+                url: "https://dl.dropboxusercontent.com/s/isx1t8tpvnp5pwxxalze1/front.jpg?rlkey=9143n6wfcgw359zvjzwicz8ol&dl=1" },
+                
+            {   id: 2, 
                 name: "Citizenship", 
-                description: "Back View",
-                url: "https://dl.dropboxusercontent.com/scl/fi/e6qkt0zcie9hcgg0m73hd/citizenship_back.jpg?rlkey=q6ch49fuq3mk5uxk7vxrtni4h&dl=1" 
-            },
+                description: "Back View | Issued Date:- 2065-04-15" , 
+                url: "https://dl.dropboxusercontent.com/s/e6qkt0zcie9hcgg0m73hd/citizenship_back.jpg?rlkey=q6ch49fuq3mk5uxk7vxrtni4h&dl=1" },
             { 
                 id: 3, 
                 name: "Marriage Certificate", 
@@ -516,6 +544,19 @@
         const searchInput = document.getElementById('searchInput');
         const clearSearchBtn = document.getElementById('clearSearch');
         const resetBtn = document.getElementById('resetBtn');
+        const suggestionsBox = document.getElementById('suggestions');
+
+        // Searchable items for suggestions
+        const searchableItems = imageData.map(img => ({
+            id: img.id,
+            name: img.name,
+            description: img.description
+        }));
+
+        // Keyboard nav state
+        let selectedIndex = -1;
+        let currentSuggestions = [];
+        let debounceTimer;
 
         // Show welcome message on load
         function showWelcome() {
@@ -549,14 +590,12 @@
                 return;
             }
 
-            // Update result info
             if (searchTerm) {
                 resultsInfo.textContent = `Found ${images.length} result${images.length !== 1 ? 's' : ''} for "${searchTerm}"`;
             } else {
                 resultsInfo.textContent = `Showing all ${images.length} images`;
             }
 
-            // Render cards
             images.forEach(img => {
                 const col = document.createElement('div');
                 col.className = 'col-md-6 col-lg-4 col-xl-3';
@@ -573,7 +612,6 @@
                 imageResults.appendChild(col);
             });
 
-            // Attach click listeners
             document.querySelectorAll('.image-card').forEach(card => {
                 card.addEventListener('click', () => {
                     const id = card.getAttribute('data-id');
@@ -590,28 +628,175 @@
             const modalDesc = document.getElementById('modalDescription');
             const downloadLink = document.getElementById('downloadLink');
 
-            // Set modal content
             modalImg.src = img.url;
             modalImg.alt = img.name;
             modalTitle.textContent = img.name;
             modalDesc.textContent = img.description;
 
-            // Smart filename for download
             const url = new URL(img.url);
-            let filename = url.pathname.split('/').pop().split('?')[0];
+            let filename = url.pathname.split('/').pop();
             if (!filename.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
                 filename = img.name.replace(/\s+/g, '-') + '.jpg';
             }
             downloadLink.href = img.url;
             downloadLink.download = filename;
 
-            // Show modal
             const modal = new bootstrap.Modal(document.getElementById('imageModal'));
             modal.show();
         }
 
-        // Search logic
+        // === SUGGESTIONS & KEYBOARD NAV ===
+
+        function highlight(text, term) {
+            if (!term.trim()) return text;
+            const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+            return text.replace(regex, '<mark>$1</mark>');
+        }
+
+        function showSuggestions(term) {
+            if (!term.trim()) {
+                suggestionsBox.style.display = 'none';
+                selectedIndex = -1;
+                currentSuggestions = [];
+                return;
+            }
+
+            const matches = [];
+            const lowerTerm = term.toLowerCase();
+
+            for (const item of searchableItems) {
+                if (
+                    item.name.toLowerCase().includes(lowerTerm) ||
+                    item.description.toLowerCase().includes(lowerTerm)
+                ) {
+                    matches.push(item);
+                    if (matches.length >= 8) break;
+                }
+            }
+
+            if (matches.length === 0) {
+                suggestionsBox.style.display = 'none';
+                selectedIndex = -1;
+                currentSuggestions = [];
+                return;
+            }
+
+            currentSuggestions = matches;
+            selectedIndex = -1;
+
+            suggestionsBox.innerHTML = matches.map(item => `
+                <div class="suggestion-item" data-id="${item.id}">
+                    <div class="suggestion-title">${highlight(item.name, term)}</div>
+                    <div class="suggestion-desc">${highlight(item.description, term)}</div>
+                </div>
+            `).join('');
+
+            suggestionsBox.style.display = 'block';
+
+            suggestionsBox.querySelectorAll('.suggestion-item').forEach((el, idx) => {
+                el.addEventListener('click', () => selectSuggestion(idx));
+                el.addEventListener('mouseenter', () => {
+                    selectedIndex = idx;
+                    updateSelection();
+                });
+            });
+        }
+
+        function updateSelection() {
+            suggestionsBox.querySelectorAll('.suggestion-item').forEach(el => {
+                el.classList.remove('selected');
+            });
+            if (selectedIndex >= 0 && selectedIndex < currentSuggestions.length) {
+                const selectedItem = suggestionsBox.children[selectedIndex];
+                if (selectedItem) {
+                    selectedItem.classList.add('selected');
+                    selectedItem.scrollIntoView({ block: 'nearest' });
+                }
+            }
+        }
+
+        function selectSuggestion(index) {
+            if (index < 0 || index >= currentSuggestions.length) return;
+            const item = currentSuggestions[index];
+            const img = imageData.find(i => i.id == item.id);
+            if (img) {
+                searchInput.value = img.name;
+                suggestionsBox.style.display = 'none';
+                selectedIndex = -1;
+                currentSuggestions = [];
+                displayImages([img], img.name);
+            }
+        }
+
+        // === EVENT LISTENERS ===
+
+        document.getElementById('searchBtn').addEventListener('click', handleSearch);
+        document.getElementById('showAllBtn').addEventListener('click', () => {
+            suggestionsBox.style.display = 'none';
+            displayImages([...imageData]);
+        });
+        resetBtn.addEventListener('click', handleReset);
+
+        searchInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') handleSearch();
+        });
+
+        searchInput.addEventListener('input', () => {
+            const value = searchInput.value.trim();
+            clearSearchBtn.style.display = value ? 'block' : 'none';
+
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                showSuggestions(value);
+            }, 200);
+        });
+
+        searchInput.addEventListener('keydown', (e) => {
+            if (suggestionsBox.style.display !== 'block') return;
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                selectedIndex = Math.min(selectedIndex + 1, currentSuggestions.length - 1);
+                updateSelection();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                selectedIndex = Math.max(selectedIndex - 1, -1);
+                updateSelection();
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (selectedIndex >= 0) {
+                    selectSuggestion(selectedIndex);
+                } else if (currentSuggestions.length > 0) {
+                    selectSuggestion(0);
+                }
+            } else if (e.key === 'Escape') {
+                suggestionsBox.style.display = 'none';
+                selectedIndex = -1;
+                currentSuggestions = [];
+            }
+        });
+
+        clearSearchBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            clearSearchBtn.style.display = 'none';
+            suggestionsBox.style.display = 'none';
+            selectedIndex = -1;
+            currentSuggestions = [];
+            showWelcome();
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.input-group')) {
+                suggestionsBox.style.display = 'none';
+                selectedIndex = -1;
+                currentSuggestions = [];
+            }
+        });
+
         function handleSearch() {
+            suggestionsBox.style.display = 'none';
+            selectedIndex = -1;
+            currentSuggestions = [];
             const term = searchInput.value.trim().toLowerCase();
             loadingSpinner.style.display = 'block';
 
@@ -629,35 +814,15 @@
             }, 600);
         }
 
-        // Reset function
         function handleReset() {
             searchInput.value = '';
             clearSearchBtn.style.display = 'none';
+            suggestionsBox.style.display = 'none';
+            selectedIndex = -1;
+            currentSuggestions = [];
             showWelcome();
         }
 
-        // Event Listeners
-        document.getElementById('searchBtn').addEventListener('click', handleSearch);
-        document.getElementById('showAllBtn').addEventListener('click', () => {
-            displayImages([...imageData]);
-        });
-        resetBtn.addEventListener('click', handleReset);
-
-        searchInput.addEventListener('keyup', (e) => {
-            if (e.key === 'Enter') handleSearch();
-        });
-
-        clearSearchBtn.addEventListener('click', () => {
-            searchInput.value = '';
-            showWelcome();
-            clearSearchBtn.style.display = 'none';
-        });
-
-        searchInput.addEventListener('input', () => {
-            clearSearchBtn.style.display = searchInput.value.trim() ? 'block' : 'none';
-        });
-
-        // Initialize
         window.addEventListener('DOMContentLoaded', showWelcome);
     </script>
 </body>
