@@ -4,856 +4,1017 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Documents</title>
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <!-- Font Awesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
         :root {
-            --primary: #4361ee;
-            --primary-light: #4895ef;
-            --secondary: #3f37c9;
-            --accent: #4cc9f0;
-            --light: #f8f9fa;
-            --dark: #212529;
-            --gray: #6c757d;
-            --bg-gradient: linear-gradient(135deg, #f0f4ff 0%, #e6edff 100%);
-            --card-bg: #ffffff;
-            --shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-            --shadow-hover: 0 12px 30px rgba(67, 97, 238, 0.25);
+            --gold: #c9a84c;
+            --gold-light: #e8c97a;
+            --gold-dim: rgba(201, 168, 76, 0.15);
+            --obsidian: #0b0c0f;
+            --surface: #111318;
+            --surface-2: #181b22;
+            --surface-3: #1f2330;
+            --border: rgba(201, 168, 76, 0.18);
+            --border-subtle: rgba(255,255,255,0.06);
+            --text: #f0ece3;
+            --text-muted: #7a7d8a;
+            --text-dim: #454855;
+            --radius: 16px;
+            --radius-lg: 24px;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            background: var(--bg-gradient);
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--obsidian);
+            background-image:
+                radial-gradient(ellipse 80% 50% at 50% -10%, rgba(201,168,76,0.07) 0%, transparent 60%),
+                radial-gradient(ellipse 40% 40% at 90% 80%, rgba(201,168,76,0.04) 0%, transparent 50%);
+            font-family: 'DM Sans', sans-serif;
+            color: var(--text);
             min-height: 100vh;
-            padding: 20px;
-            color: var(--dark);
+            padding: 0 0 80px;
+            overflow-x: hidden;
         }
 
-        .container {
-            max-width: 1200px;
+        /* ─── NOISE TEXTURE OVERLAY ─── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.4;
         }
 
+        /* ─── HEADER ─── */
         .header {
+            position: relative;
             text-align: center;
-            margin-bottom: 30px;
-            padding: 25px 0;
+            padding: 72px 24px 48px;
+            z-index: 1;
+        }
+
+        .header-eyebrow {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 16px;
+            opacity: 0;
+            animation: fadeUp 0.8s ease 0.1s forwards;
+        }
+
+        .header-eyebrow::before,
+        .header-eyebrow::after {
+            content: '';
+            display: inline-block;
+            width: 30px;
+            height: 1px;
+            background: var(--gold);
+            vertical-align: middle;
+            margin: 0 12px;
+            opacity: 0.6;
         }
 
         .title {
-            font-size: 2.5rem;
-            font-weight: 800;
-            background: linear-gradient(120deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 10px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2.8rem, 6vw, 5rem);
+            font-weight: 300;
+            line-height: 1.05;
+            letter-spacing: -0.01em;
+            color: var(--text);
+            margin-bottom: 16px;
+            opacity: 0;
+            animation: fadeUp 0.9s ease 0.2s forwards;
+        }
+
+        .title em {
+            font-style: italic;
+            color: var(--gold-light);
         }
 
         .subtitle {
-            color: var(--gray);
-            font-size: 1.1rem;
-            max-width: 600px;
-            margin: 0 auto;
-            line-height: 1.6;
+            font-size: 0.95rem;
+            font-weight: 300;
+            color: var(--text-muted);
+            letter-spacing: 0.02em;
+            opacity: 0;
+            animation: fadeUp 0.9s ease 0.35s forwards;
         }
 
+        /* ─── GOLD DIVIDER ─── */
+        .divider {
+            width: 60px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 20px auto 0;
+            opacity: 0;
+            animation: fadeUp 0.9s ease 0.45s forwards;
+        }
+
+        /* ─── SEARCH SECTION ─── */
         .search-section {
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: var(--shadow);
-            margin-bottom: 30px;
             position: relative;
+            max-width: 780px;
+            margin: 0 auto 48px;
+            padding: 0 24px;
+            z-index: 1;
+            opacity: 0;
+            animation: fadeUp 0.9s ease 0.5s forwards;
         }
 
-        .input-group {
+        .search-wrapper {
             position: relative;
-            max-width: 600px;
-            margin: 0 auto 20px;
-        }
-
-        .search-input {
-            padding-left: 50px;
-            height: 60px;
+            background: var(--surface);
+            border: 1px solid var(--border);
             border-radius: 50px;
-            border: 2px solid #e9ecef;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            background-color: #f9fafc;
-            position: relative;
-            z-index: 2;
+            display: flex;
+            align-items: center;
+            padding: 6px 6px 6px 24px;
+            gap: 12px;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
 
-        .search-input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.2);
-            background-color: white;
-            outline: none;
+        .search-wrapper:focus-within {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 4px rgba(201,168,76,0.08), 0 8px 32px rgba(0,0,0,0.4);
         }
 
         .search-icon {
-            position: absolute;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--gray);
-            font-size: 1.2rem;
-            z-index: 3;
+            color: var(--gold);
+            font-size: 0.9rem;
+            flex-shrink: 0;
+            opacity: 0.8;
         }
 
-        .clear-search {
-            position: absolute;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
+        .search-input {
+            flex: 1;
             background: none;
             border: none;
-            color: var(--gray);
-            cursor: pointer;
-            font-size: 1.2rem;
-            display: none;
-            z-index: 3;
+            outline: none;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 300;
+            color: var(--text);
+            letter-spacing: 0.02em;
+            padding: 10px 0;
         }
 
-        .btn-group-actions {
+        .search-input::placeholder {
+            color: var(--text-dim);
+        }
+
+        .clear-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            display: none;
+            transition: color 0.2s;
+        }
+
+        .clear-btn:hover { color: var(--gold); }
+
+        .search-submit {
+            background: linear-gradient(135deg, var(--gold), #a07830);
+            border: none;
+            color: #0b0c0f;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 12px 28px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .search-submit:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(201,168,76,0.3);
+        }
+
+        /* Suggestions */
+        .suggestions-drop {
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 0; right: 0;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            display: none;
+            z-index: 200;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+        }
+
+        .suggestion-item {
+            padding: 13px 20px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-subtle);
+            transition: background 0.15s;
+        }
+
+        .suggestion-item:last-child { border-bottom: none; }
+        .suggestion-item:hover,
+        .suggestion-item.selected {
+            background: var(--gold-dim);
+        }
+
+        .sug-name {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: var(--text);
+        }
+
+        .sug-desc {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        mark {
+            background: transparent;
+            color: var(--gold-light);
+            font-weight: 500;
+        }
+
+        /* Action buttons */
+        .action-row {
             display: flex;
             justify-content: center;
             gap: 12px;
+            margin-top: 18px;
             flex-wrap: wrap;
         }
 
-        .btn-primary {
-            background: linear-gradient(120deg, var(--primary), var(--secondary));
-            border: none;
-            padding: 10px 28px;
-            font-weight: 600;
-            font-size: 1rem;
-            border-radius: 50px;
-            box-shadow: 0 4px 14px rgba(67, 97, 238, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(67, 97, 238, 0.45);
-        }
-
-        .btn-outline {
+        .btn-ghost {
             background: transparent;
-            border: 2px solid var(--primary);
-            color: var(--primary);
-            padding: 10px 28px;
-            font-weight: 600;
-            border-radius: 50px;
-            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 400;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 10px 22px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.25s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .btn-outline:hover {
-            background: rgba(67, 97, 238, 0.08);
-            transform: translateY(-2px);
+        .btn-ghost:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+            background: var(--gold-dim);
         }
 
-        .results-info {
+        .btn-ghost i { font-size: 0.75rem; }
+
+        /* ─── RESULTS INFO ─── */
+        .results-meta {
             text-align: center;
-            margin: 20px 0;
-            font-weight: 600;
-            color: var(--dark);
-            font-size: 1.1rem;
+            font-size: 0.8rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 36px;
+            position: relative;
+            z-index: 1;
         }
 
-        .loading-spinner {
+        .results-meta span {
+            color: var(--gold);
+        }
+
+        /* ─── LOADING ─── */
+        .loading {
             display: none;
             text-align: center;
-            margin: 40px 0;
+            padding: 60px;
+            z-index: 1;
+            position: relative;
         }
 
-        .spinner-border {
-            width: 3rem;
-            height: 3rem;
-            border-width: 0.3em;
-            color: var(--primary);
+        .spinner-ring {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 2px solid var(--border-subtle);
+            border-top-color: var(--gold);
+            animation: spin 0.9s linear infinite;
+            margin: 0 auto 16px;
         }
 
-        .image-card {
-            border-radius: 16px;
+        .loading p {
+            font-size: 0.82rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        /* ─── GRID ─── */
+        .grid-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            gap: 20px;
+        }
+
+        /* ─── CARD ─── */
+        .doc-card {
+            background: var(--surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
             overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: all 0.4s ease;
-            height: 100%;
-            background: white;
-            border: none;
             cursor: pointer;
+            position: relative;
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        border-color 0.35s,
+                        box-shadow 0.35s;
+            opacity: 0;
+            animation: cardIn 0.5s ease forwards;
         }
 
-        .image-card:hover {
-            transform: translateY(-6px);
-            box-shadow: var(--shadow-hover);
+        .doc-card:hover {
+            transform: translateY(-8px) scale(1.01);
+            border-color: var(--border);
+            box-shadow: 0 24px 60px rgba(0,0,0,0.5), 0 0 0 1px var(--border);
         }
 
-        .card-img-top {
-            height: 200px;
+        .doc-card:hover .card-img-wrap img {
+            transform: scale(1.07);
+        }
+
+        .doc-card:hover .card-glow {
+            opacity: 1;
+        }
+
+        /* top gold line on hover */
+        .doc-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            opacity: 0;
+            transition: opacity 0.35s;
+            z-index: 2;
+        }
+
+        .doc-card:hover::before { opacity: 1; }
+
+        .card-glow {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(201,168,76,0.06), transparent 70%);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.35s;
+            z-index: 1;
+        }
+
+        .card-img-wrap {
+            overflow: hidden;
+            height: 190px;
+            background: var(--surface-3);
+            position: relative;
+        }
+
+        .card-img-wrap img {
+            width: 100%;
+            height: 100%;
             object-fit: cover;
-            transition: transform 0.5s ease;
+            display: block;
+            transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
-        .image-card:hover .card-img-top {
-            transform: scale(1.05);
+        .card-img-wrap::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 60px;
+            background: linear-gradient(to top, var(--surface), transparent);
+            pointer-events: none;
         }
 
         .card-body {
-            padding: 18px;
+            padding: 18px 20px 20px;
+            position: relative;
+            z-index: 1;
         }
 
-        .card-title {
-            font-weight: 700;
-            font-size: 1.15rem;
-            color: var(--dark);
-            margin-bottom: 6px;
-        }
-
-        .card-text {
-            color: var(--gray);
-            font-size: 0.95rem;
-        }
-
-        .no-results, .welcome-message {
-            text-align: center;
-            padding: 70px 20px;
-            color: var(--gray);
-        }
-
-        .no-results i, .welcome-message i {
-            font-size: 5rem;
-            margin-bottom: 25px;
-            opacity: 0.7;
-        }
-
-        .no-results i {
-            color: #e0e0e0;
-        }
-
-        .welcome-message i {
-            color: var(--primary);
-            opacity: 0.9;
-        }
-
-        .no-results h3, .welcome-message h3 {
-            font-weight: 700;
-            color: var(--dark);
-            margin-bottom: 15px;
-            font-size: 1.8rem;
-        }
-
-        .no-results p, .welcome-message p {
-            max-width: 500px;
-            margin: 0 auto;
-            line-height: 1.6;
-            font-size: 1.05rem;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 50px;
-            padding: 25px 0;
-            color: var(--gray);
-            font-size: 0.95rem;
-            border-top: 1px solid rgba(0,0,0,0.05);
-        }
-
-        /* Modal */
-        .modal-content {
+        .card-tag {
+            display: inline-block;
+            font-size: 9px;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--gold);
+            border: 1px solid rgba(201,168,76,0.3);
+            padding: 3px 9px;
             border-radius: 20px;
-            border: none;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            margin-bottom: 10px;
+        }
+
+        .card-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.22rem;
+            font-weight: 400;
+            color: var(--text);
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+
+        .card-desc {
+            font-size: 0.78rem;
+            font-weight: 300;
+            color: var(--text-muted);
+            line-height: 1.5;
+            letter-spacing: 0.01em;
+        }
+
+        .card-arrow {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            transition: all 0.25s;
+        }
+
+        .doc-card:hover .card-arrow {
+            background: var(--gold);
+            border-color: var(--gold);
+            color: #0b0c0f;
+            transform: rotate(45deg);
+        }
+
+        /* ─── WELCOME / NO RESULTS ─── */
+        .state-message {
+            text-align: center;
+            padding: 90px 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .state-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 28px;
+            font-size: 1.8rem;
+            color: var(--gold);
+            background: var(--gold-dim);
+        }
+
+        .state-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.2rem;
+            font-weight: 300;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+
+        .state-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 300;
+            max-width: 400px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        /* ─── MODAL ─── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(7,8,10,0.88);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-box {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            max-width: 800px;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.7);
+            transform: translateY(24px) scale(0.97);
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .modal-overlay.active .modal-box {
+            transform: translateY(0) scale(1);
+        }
+
+        .modal-top-bar {
+            height: 2px;
+            background: linear-gradient(90deg, transparent 0%, var(--gold) 40%, var(--gold-light) 60%, transparent 100%);
         }
 
         .modal-header {
-            background: var(--secondary);
-            color: white;
-            border-bottom: none;
-            padding: 20px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 22px 28px;
+            border-bottom: 1px solid var(--border-subtle);
         }
 
-        .modal-body {
-            padding: 25px;
+        .modal-header-left {
+            display: flex;
+            flex-direction: column;
         }
 
-        .modal-image {
-            max-height: 70vh;
-            width: 100%;
-            object-fit: contain;
-            border-radius: 12px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        .modal-eyebrow {
+            font-size: 9px;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 4px;
         }
 
-        /* Suggestions Dropdown */
-        .suggestion-item {
-            padding: 10px 15px;
-            cursor: pointer;
-            border-bottom: 1px solid #eee;
-            font-size: 0.95rem;
+        .modal-title-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            font-weight: 400;
+            color: var(--text);
         }
-        .suggestion-item:hover, .suggestion-item.selected {
-            background-color: #e0e7ff !important;
-            color: var(--primary);
-        }
-        .suggestion-title {
-            font-weight: 600;
-        }
-        .suggestion-desc {
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid var(--border-subtle);
+            background: none;
+            color: var(--text-muted);
             font-size: 0.85rem;
-            color: var(--gray);
-        }
-        mark {
-            background-color: #fff3cd;
-            color: #000;
-            padding: 0 2px;
-            border-radius: 2px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
         }
 
-        @media (max-width: 768px) {
-            .btn-group-actions {
-                flex-direction: column;
-                align-items: center;
-            }
-            .btn {
-                width: 100%;
-                max-width: 300px;
-            }
-            .title {
-                font-size: 2rem;
-            }
+        .modal-close:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+            background: var(--gold-dim);
+        }
+
+        .modal-img-wrap {
+            background: var(--surface-3);
+            max-height: 55vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-img-wrap img {
+            max-height: 55vh;
+            max-width: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .modal-footer {
+            padding: 20px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .modal-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 300;
+            flex: 1;
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, var(--gold), #9a6e28);
+            color: #0b0c0f;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 11px 24px;
+            border-radius: 40px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: opacity 0.2s, box-shadow 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-download:hover {
+            opacity: 0.9;
+            box-shadow: 0 6px 20px rgba(201,168,76,0.35);
+        }
+
+        /* ─── FOOTER ─── */
+        .footer {
+            text-align: center;
+            margin-top: 80px;
+            padding: 32px 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer::before {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border), transparent);
+            margin: 0 auto 20px;
+        }
+
+        .footer p {
+            font-size: 0.75rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+        }
+
+        /* ─── ANIMATIONS ─── */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 600px) {
+            .title { font-size: 2.6rem; }
+            .action-row { flex-direction: column; align-items: center; }
+            .btn-ghost { width: 100%; max-width: 280px; justify-content: center; }
+            .modal-footer { flex-direction: column; align-items: flex-start; }
+            .image-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1 class="title">My Documents</h1>
-            <p class="subtitle">Search or browse your documents</p>
-        </div>
 
-        <div class="search-section">
-            <div class="input-group">
-                <i class="fas fa-search search-icon"></i>
-                <input
-                    type="text"
-                    id="searchInput"
-                    class="form-control search-input"
-                    placeholder="Search by name or description..."
-                />
-                <button class="clear-search" id="clearSearch">
-                    <i class="fas fa-times"></i>
-                </button>
-                <div id="suggestions" class="position-absolute bg-white border rounded shadow mt-1 w-100" 
-                     style="top: 100%; display: none; max-height: 300px; overflow-y: auto; z-index: 1000;"></div>
-            </div>
-            <div class="btn-group-actions">
-                <button id="searchBtn" class="btn btn-primary">
-                    <i class="fas fa-search me-2"></i>Search
-                </button>
-                <button id="showAllBtn" class="btn btn-outline">
-                    <i class="fas fa-th-large me-2"></i>View All Images
-                </button>
-                <button id="resetBtn" class="btn btn-outline">
-                    <i class="fas fa-undo me-2"></i>Reset
-                </button>
-            </div>
-        </div>
+    <!-- Header -->
+    <header class="header">
+        <p class="header-eyebrow">Personal Vault</p>
+        <h1 class="title">My <em>Documents</em></h1>
+        <p class="subtitle">Search and access your important records</p>
+        <div class="divider"></div>
+    </header>
 
-        <div class="loading-spinner" id="loadingSpinner">
-            <div class="spinner-border" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-            <p class="mt-3">Searching images...</p>
+    <!-- Search -->
+    <section class="search-section">
+        <div class="search-wrapper" id="searchWrapper">
+            <i class="fas fa-search search-icon"></i>
+            <input
+                type="text"
+                id="searchInput"
+                class="search-input"
+                placeholder="Search by name or description…"
+                autocomplete="off"
+            />
+            <button class="clear-btn" id="clearBtn" title="Clear"><i class="fas fa-times"></i></button>
+            <button class="search-submit" id="searchBtn">Search</button>
+            <div class="suggestions-drop" id="suggestions"></div>
         </div>
-
-        <div class="results-info" id="resultsInfo"></div>
-
-        <div class="image-container">
-            <div class="row g-4" id="imageResults">
-                <!-- Will be populated by JS -->
-            </div>
+        <div class="action-row">
+            <button class="btn-ghost" id="showAllBtn">
+                <i class="fas fa-border-all"></i> View All
+            </button>
+            <button class="btn-ghost" id="resetBtn">
+                <i class="fas fa-rotate-left"></i> Reset
+            </button>
         </div>
+    </section>
 
-        <div class="footer">
-            <p>Image Search Gallery &copy; 2025 | Personal Images Library</p>
-        </div>
+    <!-- Loading -->
+    <div class="loading" id="loading">
+        <div class="spinner-ring"></div>
+        <p>Searching…</p>
     </div>
 
-    <!-- Image Modal -->
-    <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="imageModalLabel">Image Preview</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <!-- Results meta -->
+    <div class="results-meta" id="resultsMeta"></div>
+
+    <!-- Grid -->
+    <main class="grid-container">
+        <div class="image-grid" id="imageGrid"></div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Documents Vault &copy; 2025 &mdash; Personal Collection</p>
+    </footer>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-box">
+            <div class="modal-top-bar"></div>
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <span class="modal-eyebrow">Document Preview</span>
+                    <h2 class="modal-title-text" id="mTitle"></h2>
                 </div>
-                <div class="modal-body text-center">
-                    <img id="modalImage" src="" alt="" class="modal-image" />
-                    <h5 class="mt-4" id="modalTitle"></h5>
-                    <p class="text-muted mt-2" id="modalDescription"></p>
-                </div>
-                <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <a id="downloadLink" href="#" class="btn btn-primary" download>
-                        <i class="fas fa-download me-2"></i>Download
-                    </a>
-                </div>
+                <button class="modal-close" id="modalClose"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-img-wrap">
+                <img id="mImg" src="" alt="" />
+            </div>
+            <div class="modal-footer">
+                <p class="modal-desc" id="mDesc"></p>
+                <a class="btn-download" id="mDownload" href="#" download>
+                    <i class="fas fa-arrow-down"></i> Download
+                </a>
             </div>
         </div>
     </div>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        // ✅ FIXED DROPBOX DIRECT LINKS (dl.dropboxusercontent.com)
         const imageData = [
-            {   id: 1, 
-                name: "Citizenship", 
-                description: "Front View | Number:- 28-01-065-02165", 
-                url: "https://dl.dropboxusercontent.com/s/isx1t8tpvnp5pwxxalze1/front.jpg?rlkey=9143n6wfcgw359zvjzwicz8ol&dl=1" },
-                
-            {   id: 2, 
-                name: "Citizenship", 
-                description: "Back View | Issued Date:- 2065-04-15" , 
-                url: "https://dl.dropboxusercontent.com/s/e6qkt0zcie9hcgg0m73hd/citizenship_back.jpg?rlkey=q6ch49fuq3mk5uxk7vxrtni4h&dl=1" },
-            { 
-                id: 3, 
-                name: "Marriage Certificate", 
-                description: "Number:- 2047081401787-2044101901409-4",
-                url: "https://dl.dropboxusercontent.com/scl/fi/zga55hrs7hkepwl5sgulf/marriage-certificate.jpg?rlkey=be9kbc9dw6zt3vbb2mrpxua0m&dl=1" 
-            },
-            { 
-                id: 4, 
-                name: "Global IME Bank", 
-                description: "QR | A/C Number:- 08807010006081",
-                url: "https://dl.dropboxusercontent.com/scl/fi/44hju075jh0dg4xdmmmvz/QR_GBIME.jpg?rlkey=k45hxnfnvyw16y8k3hopjg6oh&dl=1" 
-            },
-            { 
-                id: 5, 
-                name: "Anil- Sunrise Laxmi Bank", 
-                description: "QR | A/C Number:- 00710124352018",
-                url: "https://dl.dropboxusercontent.com/scl/fi/b3dikb5tlezgwb36jqtis/QR_sunrise.jpg?rlkey=92pzxoh9pfrfb9ywxmzk0mul5&dl=1" 
-            },
-            { 
-                id: 6, 
-                name: "Cow Milk", 
-                description: "QR-Esewa | 9766886536",
-                url: "https://dl.dropboxusercontent.com/scl/fi/dzg6eooicwqchwsixbjgg/cwmlk.jpg?rlkey=lerjexquhcvcdv4vmlzwepl7z&dl=1" 
-            },
-            { 
-                id: 7, 
-                name: "Driving License", 
-                description: "Number:- 01-06-01003951",
-                url: "https://dl.dropboxusercontent.com/scl/fi/0wbi0ax1xbjeudc65gyxd/License.png?rlkey=zb6zpuyy3mb3k6oq6wxsrs2ef&dl=1" 
-            },
-             { 
-                id: 8, 
-                name: "National ID Card", 
-                description: "Number:- 746-461-485-4",
-                url: "https://dl.dropboxusercontent.com/scl/fi/4gttwoe6pp5a55kyjkho8/National_ID.jpg?rlkey=n6vwlpgkob9tj8uucq3k14t7a&dl=1" 
-            },
-             { 
-                id: 9, 
-                name: "Passport", 
-                description: "Number:- 09954740",
-                url: "https://dl.dropboxusercontent.com/scl/fi/3bxhec2x40st1k0za0bnr/passport.jpg?rlkey=xcah5s9vfrsndfv683fx5z56j&dl=1" 
-            },
-             { 
-                id: 10, 
-                name: "Anil-Votercard", 
-                description: "Number:- 5704456",
-                url: "https://www.dropbox.com/scl/fi/kyvbw1s9m2p2lqrntkro6/anil_voter-card.png?rlkey=bzzd7bd8740z3lm4zk7vovgm3&dl=1" 
-            },
-             { 
-                id: 11, 
-                name: "Nabil Bank", 
-                description: "CC Number:- 4511 3200 0458 1100 | A/C Number:- 18310017512622",
-                url: "https://dl.dropboxusercontent.com/scl/fi/xrqj55qqr2bj7hxs8avhq/Nabil_cc.jpg?rlkey=7t8pqdiduy5joc7hdbqf6tfoc&dl=1" 
-            },
-            { 
-                id: 12, 
-                name: "Rastriya Banijya Bank", 
-                description: "Fixed Deposit Receipt",
-                url: "https://www.dropbox.com/scl/fi/adk0mektdqkn3puq6i71i/Rastriya-Banijya-Bank_Fixed-Deposit-Receipt.jpg?rlkey=flk3qnb4lwmdjaor76yanz0fg&st=aya2tt0w&dl=1" 
-            },
-            { 
-                id: 13, 
-                name: "PAN Card", 
-                description: "Number:- 111677845",
-                url: "https://dl.dropboxusercontent.com/scl/fi/psru6ppmg6b5t47otamyl/PAN-Card.jpg?rlkey=q437hbz2zz4mwxijfpwnymkz9&dl=1" 
-            },
-            { 
-                id: 14, 
-                name: "Sunil-Laxmi Sunrise Bank", 
-                description: "QR | A/C Number:- 00710103473017",
-                url: "https://www.dropbox.com/scl/fi/ft5qep5tosojxyehu9hyk/Sunil_Laxmi-Sunrise_QR.jpg?rlkey=n34bguuswdi9mlmzvfntifolp&dl=1" 
-            },
-             { 
-                id: 15, 
-                name: "Asthalin", 
-                description: "inhaler | 100mcg/dose",
-                url: "https://www.dropbox.com/scl/fi/hzdf288sexinzk1u89dxn/asthalin.jpg?rlkey=u3a6qmigfv3pyf95icff5fg6b&dl=1" 
-            },
-             { 
-                id: 16, 
-                name: "Asthalin-Cover", 
-                description: "inhaler | 100mcg/dose",
-                url: "https://www.dropbox.com/scl/fi/x97xg8z8dltn486nh69a4/asthalin_cover.jpg?rlkey=1tml8kgcx8397ru1t3ga66h50&dl=1" 
-            },
-             { 
-                id: 17, 
-                name: "Budecort", 
-                description: "inhaler | 200mcg/dose",
-                url: "https://www.dropbox.com/scl/fi/3oxdq191ervpvp11x629h/budecort.jpg?rlkey=kqi0gj45ve5oadh8e0vtookgo&dl=1" 
-            },
-            { 
-                id: 18, 
-                name: "Budecort-Cover", 
-                description: "inhaler | 200mcg/dose",
-                url: "https://www.dropbox.com/scl/fi/gpy86jaqhctu4c5c9iy2a/budecort_cover.jpg?rlkey=rr2j5lucq0f78avflt4atm9di&dl=1" 
-            },
-              { 
-                id: 19, 
-                name: "Rastriya Banijya Bank", 
-                description: "Fixed Deposit Form",
-                url: "https://www.dropbox.com/scl/fi/21656quk9seugtiamk9yf/RBB_deposit-form.jpeg?rlkey=soxvw8aizk47zsd6xweup6dsm&dl=1" 
-            },
-             { 
-                id: 20, 
-                name: "Sangita-Votercard", 
-                description: "Number:- 093838242",
-                url: "https://www.dropbox.com/scl/fi/pt3641o8v2t3ar6o5g369/Sangita_voter-card.png?rlkey=t8u38l1dpb0qqznmwl6ff5dbe&dl=1" 
-            },
-             { 
-                id: 21, 
-                name: "Mina Parlour Fonepay", 
-                description: "QR | Fonepay",
-                url: "https://www.dropbox.com/scl/fi/0maw5od1sgfhnl6bmyoyk/Mina_Parlour_QR.jpg?rlkey=yihpv1maitrchxbay7mooto6y&dl=1" 
-            },
-            { 
-                id: 22, 
-                name: "NID Registration", 
-                description: "Registration No:- 9345322240134220",
-                url: "https://www.dropbox.com/scl/fi/76f7c2te53y53cekdxujv/nid_regist.jpg?rlkey=uit3p3d0y1lhzeaof44nk32nr&st=8zg7w1nz&dl=1" 
-            },
-            { 
-                id: 23, 
-                name: "Mero Share | Anil", 
-                description: "BOID No:- 1301070000526221",
-                url: "https://www.dropbox.com/scl/fi/i07hg2ner5qrq2t4csuo0/meroshare_anil.png?rlkey=af7tqw26sol5124dgthfpnx5e&st=7oopn2jv&dl=1" 
-            },
-            { 
-                id: 24, 
-                name: "Mero Share | Sachika", 
-                description: "BOID No:- 1301240001574896",
-                url: "https://www.dropbox.com/scl/fi/n7m6zc6bolngn6cxlol1c/meroshare_sachika.png?rlkey=ud1l6ae3t81d6z4xyqm5aqc9p&st=hsg7d2jz&dl=1" 
-            },
-             { 
-                id: 25, 
-                name: "KUKL", 
-                description: "Area No.:- 07-03-12 | Customer No:- 1118036130 | Branch:- LALITPUR | Connection No.:- 512",
-                url: "https://www.dropbox.com/scl/fi/ieddtbus6cq7qi8twwr0w/KUKL.jpg?rlkey=8kl7hdjdeqsvxk6cgvdnam4ri&st=7uzj9zdw&dl=1" 
-            }
+            { id: 1,  name: "Citizenship",               description: "Front View | Number:- 28-01-065-02165",                               url: "https://dl.dropboxusercontent.com/s/isx1t8tpvnp5pwxxalze1/front.jpg?rlkey=9143n6wfcgw359zvjzwicz8ol&dl=1" },
+            { id: 2,  name: "Citizenship",               description: "Back View | Issued Date:- 2065-04-15",                                url: "https://dl.dropboxusercontent.com/s/e6qkt0zcie9hcgg0m73hd/citizenship_back.jpg?rlkey=q6ch49fuq3mk5uxk7vxrtni4h&dl=1" },
+            { id: 3,  name: "Marriage Certificate",      description: "Number:- 2047081401787-2044101901409-4",                              url: "https://dl.dropboxusercontent.com/scl/fi/zga55hrs7hkepwl5sgulf/marriage-certificate.jpg?rlkey=be9kbc9dw6zt3vbb2mrpxua0m&dl=1" },
+            { id: 4,  name: "Global IME Bank",           description: "QR | A/C Number:- 08807010006081",                                    url: "https://dl.dropboxusercontent.com/scl/fi/44hju075jh0dg4xdmmmvz/QR_GBIME.jpg?rlkey=k45hxnfnvyw16y8k3hopjg6oh&dl=1" },
+            { id: 5,  name: "Anil- Sunrise Laxmi Bank",  description: "QR | A/C Number:- 00710124352018",                                   url: "https://dl.dropboxusercontent.com/scl/fi/b3dikb5tlezgwb36jqtis/QR_sunrise.jpg?rlkey=92pzxoh9pfrfb9ywxmzk0mul5&dl=1" },
+            { id: 6,  name: "Cow Milk",                  description: "QR-Esewa | 9766886536",                                               url: "https://dl.dropboxusercontent.com/scl/fi/dzg6eooicwqchwsixbjgg/cwmlk.jpg?rlkey=lerjexquhcvcdv4vmlzwepl7z&dl=1" },
+            { id: 7,  name: "Driving License",           description: "Number:- 01-06-01003951",                                             url: "https://dl.dropboxusercontent.com/scl/fi/0wbi0ax1xbjeudc65gyxd/License.png?rlkey=zb6zpuyy3mb3k6oq6wxsrs2ef&dl=1" },
+            { id: 8,  name: "National ID Card",          description: "Number:- 746-461-485-4",                                              url: "https://dl.dropboxusercontent.com/scl/fi/4gttwoe6pp5a55kyjkho8/National_ID.jpg?rlkey=n6vwlpgkob9tj8uucq3k14t7a&dl=1" },
+            { id: 9,  name: "Passport",                  description: "Number:- 09954740",                                                   url: "https://dl.dropboxusercontent.com/scl/fi/3bxhec2x40st1k0za0bnr/passport.jpg?rlkey=xcah5s9vfrsndfv683fx5z56j&dl=1" },
+            { id: 10, name: "Anil-Votercard",            description: "Number:- 5704456",                                                    url: "https://www.dropbox.com/scl/fi/kyvbw1s9m2p2lqrntkro6/anil_voter-card.png?rlkey=bzzd7bd8740z3lm4zk7vovgm3&dl=1" },
+            { id: 11, name: "Nabil Bank",                description: "CC Number:- 4511 3200 0458 1100 | A/C Number:- 18310017512622",       url: "https://dl.dropboxusercontent.com/scl/fi/xrqj55qqr2bj7hxs8avhq/Nabil_cc.jpg?rlkey=7t8pqdiduy5joc7hdbqf6tfoc&dl=1" },
+            { id: 12, name: "Rastriya Banijya Bank",     description: "Fixed Deposit Receipt",                                               url: "https://www.dropbox.com/scl/fi/adk0mektdqkn3puq6i71i/Rastriya-Banijya-Bank_Fixed-Deposit-Receipt.jpg?rlkey=flk3qnb4lwmdjaor76yanz0fg&st=aya2tt0w&dl=1" },
+            { id: 13, name: "PAN Card",                  description: "Number:- 111677845",                                                  url: "https://dl.dropboxusercontent.com/scl/fi/psru6ppmg6b5t47otamyl/PAN-Card.jpg?rlkey=q437hbz2zz4mwxijfpwnymkz9&dl=1" },
+            { id: 14, name: "Sunil-Laxmi Sunrise Bank",  description: "QR | A/C Number:- 00710103473017",                                   url: "https://www.dropbox.com/scl/fi/ft5qep5tosojxyehu9hyk/Sunil_Laxmi-Sunrise_QR.jpg?rlkey=n34bguuswdi9mlmzvfntifolp&dl=1" },
+            { id: 15, name: "Asthalin",                  description: "inhaler | 100mcg/dose",                                               url: "https://www.dropbox.com/scl/fi/hzdf288sexinzk1u89dxn/asthalin.jpg?rlkey=u3a6qmigfv3pyf95icff5fg6b&dl=1" },
+            { id: 16, name: "Asthalin-Cover",            description: "inhaler | 100mcg/dose",                                               url: "https://www.dropbox.com/scl/fi/x97xg8z8dltn486nh69a4/asthalin_cover.jpg?rlkey=1tml8kgcx8397ru1t3ga66h50&dl=1" },
+            { id: 17, name: "Budecort",                  description: "inhaler | 200mcg/dose",                                               url: "https://www.dropbox.com/scl/fi/3oxdq191ervpvp11x629h/budecort.jpg?rlkey=kqi0gj45ve5oadh8e0vtookgo&dl=1" },
+            { id: 18, name: "Budecort-Cover",            description: "inhaler | 200mcg/dose",                                               url: "https://www.dropbox.com/scl/fi/gpy86jaqhctu4c5c9iy2a/budecort_cover.jpg?rlkey=rr2j5lucq0f78avflt4atm9di&dl=1" },
+            { id: 19, name: "Rastriya Banijya Bank",     description: "Fixed Deposit Form",                                                  url: "https://www.dropbox.com/scl/fi/21656quk9seugtiamk9yf/RBB_deposit-form.jpeg?rlkey=soxvw8aizk47zsd6xweup6dsm&dl=1" },
+            { id: 20, name: "Sangita-Votercard",         description: "Number:- 093838242",                                                  url: "https://www.dropbox.com/scl/fi/pt3641o8v2t3ar6o5g369/Sangita_voter-card.png?rlkey=t8u38l1dpb0qqznmwl6ff5dbe&dl=1" },
+            { id: 21, name: "Mina Parlour Fonepay",      description: "QR | Fonepay",                                                        url: "https://www.dropbox.com/scl/fi/0maw5od1sgfhnl6bmyoyk/Mina_Parlour_QR.jpg?rlkey=yihpv1maitrchxbay7mooto6y&dl=1" },
+            { id: 22, name: "NID Registration",          description: "Registration No:- 9345322240134220",                                  url: "https://www.dropbox.com/scl/fi/76f7c2te53y53cekdxujv/nid_regist.jpg?rlkey=uit3p3d0y1lhzeaof44nk32nr&st=8zg7w1nz&dl=1" },
+            { id: 23, name: "Mero Share | Anil",         description: "BOID No:- 1301070000526221",                                          url: "https://www.dropbox.com/scl/fi/i07hg2ner5qrq2t4csuo0/meroshare_anil.png?rlkey=af7tqw26sol5124dgthfpnx5e&st=7oopn2jv&dl=1" },
+            { id: 24, name: "Mero Share | Sachika",      description: "BOID No:- 1301240001574896",                                          url: "https://www.dropbox.com/scl/fi/n7m6zc6bolngn6cxlol1c/meroshare_sachika.png?rlkey=ud1l6ae3t81d6z4xyqm5aqc9p&st=hsg7d2jz&dl=1" },
+            { id: 25, name: "KUKL",                      description: "Area No.:- 07-03-12 | Customer No:- 1118036130 | Branch:- LALITPUR | Connection No.:- 512", url: "https://www.dropbox.com/scl/fi/ieddtbus6cq7qi8twwr0w/KUKL.jpg?rlkey=8kl7hdjdeqsvxk6cgvdnam4ri&st=7uzj9zdw&dl=1" }
         ];
 
-        // DOM Elements
-        const imageResults = document.getElementById('imageResults');
-        const resultsInfo = document.getElementById('resultsInfo');
-        const loadingSpinner = document.getElementById('loadingSpinner');
-        const searchInput = document.getElementById('searchInput');
-        const clearSearchBtn = document.getElementById('clearSearch');
-        const resetBtn = document.getElementById('resetBtn');
-        const suggestionsBox = document.getElementById('suggestions');
-
-        // Searchable items for suggestions
-        const searchableItems = imageData.map(img => ({
-            id: img.id,
-            name: img.name,
-            description: img.description
-        }));
-
-        // Keyboard nav state
-        let selectedIndex = -1;
-        let currentSuggestions = [];
-        let debounceTimer;
-
-        // Show welcome message on load
-        function showWelcome() {
-            imageResults.innerHTML = `
-                <div class="col-12">
-                    <div class="welcome-message">
-                        <i class="fas fa-images"></i>
-                        <h3>Explore Your Image Collection</h3>
-                        <p>Search by keyword or click <strong>“View All Images”</strong> to see everything.</p>
-                    </div>
-                </div>
-            `;
-            resultsInfo.textContent = '';
+        // ── Category tag helper ──
+        function getTag(name) {
+            const n = name.toLowerCase();
+            if (n.includes('bank') || n.includes('nabil') || n.includes('global') || n.includes('sunrise') || n.includes('banijya') || n.includes('mero share') || n.includes('kukl')) return 'Finance';
+            if (n.includes('citizen') || n.includes('passport') || n.includes('national id') || n.includes('pan') || n.includes('nid') || n.includes('voter') || n.includes('license') || n.includes('marriage')) return 'Identity';
+            if (n.includes('milk') || n.includes('parlour') || n.includes('fonepay') || n.includes('esewa') || n.includes('qr')) return 'QR / Payment';
+            if (n.includes('asthalin') || n.includes('budecort')) return 'Medical';
+            return 'Document';
         }
 
-        // Display images
-        function displayImages(images, searchTerm = '') {
-            imageResults.innerHTML = '';
-
-            if (images.length === 0) {
-                imageResults.innerHTML = `
-                    <div class="col-12">
-                        <div class="no-results">
-                            <i class="far fa-folder-open"></i>
-                            <h3>No Matching Images</h3>
-                            <p>Try a different keyword or view all images.</p>
-                        </div>
-                    </div>
-                `;
-                resultsInfo.textContent = '';
-                return;
-            }
-
-            if (searchTerm) {
-                resultsInfo.textContent = `Found ${images.length} result${images.length !== 1 ? 's' : ''} for "${searchTerm}"`;
-            } else {
-                resultsInfo.textContent = `Showing all ${images.length} images`;
-            }
-
-            images.forEach(img => {
-                const col = document.createElement('div');
-                col.className = 'col-md-6 col-lg-4 col-xl-3';
-                col.innerHTML = `
-                    <div class="card image-card h-100" data-id="${img.id}">
-                        <img src="${img.url}" class="card-img-top" alt="${img.name}" 
-                            onerror="this.src='https://via.placeholder.com/300x200?text=Image+Not+Found'; this.onerror=null;">
-                        <div class="card-body">
-                            <h6 class="card-title">${img.name}</h6>
-                            <p class="card-text">${img.description}</p>
-                        </div>
-                    </div>
-                `;
-                imageResults.appendChild(col);
-            });
-
-            document.querySelectorAll('.image-card').forEach(card => {
-                card.addEventListener('click', () => {
-                    const id = card.getAttribute('data-id');
-                    const img = imageData.find(i => i.id == id);
-                    if (img) showModal(img);
-                });
-            });
-        }
-
-        // Show modal
-        function showModal(img) {
-            const modalImg = document.getElementById('modalImage');
-            const modalTitle = document.getElementById('modalTitle');
-            const modalDesc = document.getElementById('modalDescription');
-            const downloadLink = document.getElementById('downloadLink');
-
-            modalImg.src = img.url;
-            modalImg.alt = img.name;
-            modalTitle.textContent = img.name;
-            modalDesc.textContent = img.description;
-
-            const url = new URL(img.url);
-            let filename = url.pathname.split('/').pop();
-            if (!filename.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
-                filename = img.name.replace(/\s+/g, '-') + '.jpg';
-            }
-            downloadLink.href = img.url;
-            downloadLink.download = filename;
-
-            const modal = new bootstrap.Modal(document.getElementById('imageModal'));
-            modal.show();
-        }
-
-        // === SUGGESTIONS & KEYBOARD NAV ===
-
-        function highlight(text, term) {
+        // ── Highlight ──
+        function hl(text, term) {
             if (!term.trim()) return text;
-            const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-            return text.replace(regex, '<mark>$1</mark>');
+            const re = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+            return text.replace(re, '<mark>$1</mark>');
         }
 
-        function showSuggestions(term) {
-            if (!term.trim()) {
-                suggestionsBox.style.display = 'none';
-                selectedIndex = -1;
-                currentSuggestions = [];
+        // ── DOM refs ──
+        const grid        = document.getElementById('imageGrid');
+        const meta        = document.getElementById('resultsMeta');
+        const loading     = document.getElementById('loading');
+        const searchInput = document.getElementById('searchInput');
+        const clearBtn    = document.getElementById('clearBtn');
+        const suggestions = document.getElementById('suggestions');
+        const overlay     = document.getElementById('modalOverlay');
+        const mImg        = document.getElementById('mImg');
+        const mTitle      = document.getElementById('mTitle');
+        const mDesc       = document.getElementById('mDesc');
+        const mDownload   = document.getElementById('mDownload');
+
+        let selIdx = -1, curSugs = [], debounce;
+
+        // ── Render cards ──
+        function renderCards(items, term = '') {
+            grid.innerHTML = '';
+            if (!items.length) {
+                meta.innerHTML = '';
+                grid.innerHTML = `
+                    <div style="grid-column:1/-1">
+                        <div class="state-message">
+                            <div class="state-icon"><i class="far fa-folder-open"></i></div>
+                            <h3 class="state-title">No results found</h3>
+                            <p class="state-desc">Try a different keyword or view all documents.</p>
+                        </div>
+                    </div>`;
                 return;
             }
 
-            const matches = [];
-            const lowerTerm = term.toLowerCase();
+            meta.innerHTML = term
+                ? `<span>${items.length}</span> result${items.length !== 1 ? 's' : ''} for &ldquo;${term}&rdquo;`
+                : `Showing all <span>${items.length}</span> documents`;
 
-            for (const item of searchableItems) {
-                if (
-                    item.name.toLowerCase().includes(lowerTerm) ||
-                    item.description.toLowerCase().includes(lowerTerm)
-                ) {
-                    matches.push(item);
-                    if (matches.length >= 8) break;
-                }
-            }
-
-            if (matches.length === 0) {
-                suggestionsBox.style.display = 'none';
-                selectedIndex = -1;
-                currentSuggestions = [];
-                return;
-            }
-
-            currentSuggestions = matches;
-            selectedIndex = -1;
-
-            suggestionsBox.innerHTML = matches.map(item => `
-                <div class="suggestion-item" data-id="${item.id}">
-                    <div class="suggestion-title">${highlight(item.name, term)}</div>
-                    <div class="suggestion-desc">${highlight(item.description, term)}</div>
-                </div>
-            `).join('');
-
-            suggestionsBox.style.display = 'block';
-
-            suggestionsBox.querySelectorAll('.suggestion-item').forEach((el, idx) => {
-                el.addEventListener('click', () => selectSuggestion(idx));
-                el.addEventListener('mouseenter', () => {
-                    selectedIndex = idx;
-                    updateSelection();
-                });
+            items.forEach((img, i) => {
+                const card = document.createElement('div');
+                card.className = 'doc-card';
+                card.style.animationDelay = `${i * 40}ms`;
+                card.innerHTML = `
+                    <div class="card-glow"></div>
+                    <div class="card-img-wrap">
+                        <img src="${img.url}" alt="${img.name}" loading="lazy"
+                             onerror="this.src='https://via.placeholder.com/400x200/181b22/454855?text=Unavailable';this.onerror=null;">
+                    </div>
+                    <div class="card-body">
+                        <span class="card-tag">${getTag(img.name)}</span>
+                        <h3 class="card-name">${img.name}</h3>
+                        <p class="card-desc">${img.description}</p>
+                    </div>
+                    <div class="card-arrow"><i class="fas fa-arrow-right"></i></div>`;
+                card.addEventListener('click', () => openModal(img));
+                grid.appendChild(card);
             });
         }
 
-        function updateSelection() {
-            suggestionsBox.querySelectorAll('.suggestion-item').forEach(el => {
-                el.classList.remove('selected');
+        // ── Welcome ──
+        function showWelcome() {
+            meta.innerHTML = '';
+            grid.innerHTML = `
+                <div style="grid-column:1/-1">
+                    <div class="state-message">
+                        <div class="state-icon"><i class="fas fa-vault"></i></div>
+                        <h3 class="state-title">Your Document Vault</h3>
+                        <p class="state-desc">Search for a document by name, or tap <strong style="color:var(--gold)">View All</strong> to browse the full collection.</p>
+                    </div>
+                </div>`;
+        }
+
+        // ── Modal ──
+        function openModal(img) {
+            mImg.src = img.url;
+            mImg.alt = img.name;
+            mTitle.textContent = img.name;
+            mDesc.textContent = img.description;
+            const filename = img.url.split('/').pop().split('?')[0] || img.name.replace(/\s+/g, '-') + '.jpg';
+            mDownload.href = img.url;
+            mDownload.download = filename;
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('modalClose').addEventListener('click', closeModal);
+        overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+        // ── Search ──
+        function doSearch() {
+            hideSugs();
+            const term = searchInput.value.trim();
+            loading.style.display = 'block';
+            grid.innerHTML = '';
+            meta.innerHTML = '';
+            setTimeout(() => {
+                loading.style.display = 'none';
+                if (!term) { showWelcome(); return; }
+                const lo = term.toLowerCase();
+                renderCards(imageData.filter(d => d.name.toLowerCase().includes(lo) || d.description.toLowerCase().includes(lo)), term);
+            }, 500);
+        }
+
+        // ── Suggestions ──
+        function showSugs(term) {
+            if (!term.trim()) { hideSugs(); return; }
+            const lo = term.toLowerCase();
+            curSugs = imageData.filter(d => d.name.toLowerCase().includes(lo) || d.description.toLowerCase().includes(lo)).slice(0, 8);
+            if (!curSugs.length) { hideSugs(); return; }
+            selIdx = -1;
+            suggestions.innerHTML = curSugs.map((d, i) => `
+                <div class="suggestion-item" data-i="${i}">
+                    <div class="sug-name">${hl(d.name, term)}</div>
+                    <div class="sug-desc">${hl(d.description, term)}</div>
+                </div>`).join('');
+            suggestions.style.display = 'block';
+            suggestions.querySelectorAll('.suggestion-item').forEach(el => {
+                el.addEventListener('click', () => pickSug(+el.dataset.i));
+                el.addEventListener('mouseenter', () => { selIdx = +el.dataset.i; markSel(); });
             });
-            if (selectedIndex >= 0 && selectedIndex < currentSuggestions.length) {
-                const selectedItem = suggestionsBox.children[selectedIndex];
-                if (selectedItem) {
-                    selectedItem.classList.add('selected');
-                    selectedItem.scrollIntoView({ block: 'nearest' });
-                }
-            }
         }
 
-        function selectSuggestion(index) {
-            if (index < 0 || index >= currentSuggestions.length) return;
-            const item = currentSuggestions[index];
-            const img = imageData.find(i => i.id == item.id);
-            if (img) {
-                searchInput.value = img.name;
-                suggestionsBox.style.display = 'none';
-                selectedIndex = -1;
-                currentSuggestions = [];
-                displayImages([img], img.name);
-            }
+        function hideSugs() { suggestions.style.display = 'none'; selIdx = -1; curSugs = []; }
+
+        function markSel() {
+            suggestions.querySelectorAll('.suggestion-item').forEach((el, i) => el.classList.toggle('selected', i === selIdx));
+            if (selIdx >= 0) suggestions.children[selIdx]?.scrollIntoView({ block: 'nearest' });
         }
 
-        // === EVENT LISTENERS ===
+        function pickSug(i) {
+            const item = curSugs[i];
+            if (!item) return;
+            searchInput.value = item.name;
+            clearBtn.style.display = 'block';
+            hideSugs();
+            renderCards([item], item.name);
+        }
 
-        document.getElementById('searchBtn').addEventListener('click', handleSearch);
-        document.getElementById('showAllBtn').addEventListener('click', () => {
-            suggestionsBox.style.display = 'none';
-            displayImages([...imageData]);
+        // ── Event wiring ──
+        document.getElementById('searchBtn').addEventListener('click', doSearch);
+        document.getElementById('showAllBtn').addEventListener('click', () => { hideSugs(); renderCards([...imageData]); });
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            searchInput.value = ''; clearBtn.style.display = 'none'; hideSugs(); showWelcome();
         });
-        resetBtn.addEventListener('click', handleReset);
 
-        searchInput.addEventListener('keyup', (e) => {
-            if (e.key === 'Enter') handleSearch();
+        clearBtn.addEventListener('click', () => {
+            searchInput.value = ''; clearBtn.style.display = 'none'; hideSugs(); showWelcome();
         });
 
         searchInput.addEventListener('input', () => {
-            const value = searchInput.value.trim();
-            clearSearchBtn.style.display = value ? 'block' : 'none';
-
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
-                showSuggestions(value);
-            }, 200);
+            clearBtn.style.display = searchInput.value ? 'block' : 'none';
+            clearTimeout(debounce);
+            debounce = setTimeout(() => showSugs(searchInput.value.trim()), 180);
         });
 
-        searchInput.addEventListener('keydown', (e) => {
-            if (suggestionsBox.style.display !== 'block') return;
-
-            if (e.key === 'ArrowDown') {
-                e.preventDefault();
-                selectedIndex = Math.min(selectedIndex + 1, currentSuggestions.length - 1);
-                updateSelection();
-            } else if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                selectedIndex = Math.max(selectedIndex - 1, -1);
-                updateSelection();
-            } else if (e.key === 'Enter') {
-                e.preventDefault();
-                if (selectedIndex >= 0) {
-                    selectSuggestion(selectedIndex);
-                } else if (currentSuggestions.length > 0) {
-                    selectSuggestion(0);
-                }
-            } else if (e.key === 'Escape') {
-                suggestionsBox.style.display = 'none';
-                selectedIndex = -1;
-                currentSuggestions = [];
-            }
+        searchInput.addEventListener('keydown', e => {
+            if (suggestions.style.display !== 'block') { if (e.key === 'Enter') doSearch(); return; }
+            if (e.key === 'ArrowDown') { e.preventDefault(); selIdx = Math.min(selIdx + 1, curSugs.length - 1); markSel(); }
+            else if (e.key === 'ArrowUp') { e.preventDefault(); selIdx = Math.max(selIdx - 1, -1); markSel(); }
+            else if (e.key === 'Enter') { e.preventDefault(); selIdx >= 0 ? pickSug(selIdx) : (curSugs.length && pickSug(0)); }
+            else if (e.key === 'Escape') hideSugs();
         });
 
-        clearSearchBtn.addEventListener('click', () => {
-            searchInput.value = '';
-            clearSearchBtn.style.display = 'none';
-            suggestionsBox.style.display = 'none';
-            selectedIndex = -1;
-            currentSuggestions = [];
-            showWelcome();
+        document.addEventListener('click', e => {
+            if (!e.target.closest('#searchWrapper')) hideSugs();
         });
 
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.input-group')) {
-                suggestionsBox.style.display = 'none';
-                selectedIndex = -1;
-                currentSuggestions = [];
-            }
-        });
-
-        function handleSearch() {
-            suggestionsBox.style.display = 'none';
-            selectedIndex = -1;
-            currentSuggestions = [];
-            const term = searchInput.value.trim().toLowerCase();
-            loadingSpinner.style.display = 'block';
-
-            setTimeout(() => {
-                if (!term) {
-                    showWelcome();
-                } else {
-                    const filtered = imageData.filter(img =>
-                        img.name.toLowerCase().includes(term) ||
-                        img.description.toLowerCase().includes(term)
-                    );
-                    displayImages(filtered, term);
-                }
-                loadingSpinner.style.display = 'none';
-            }, 600);
-        }
-
-        function handleReset() {
-            searchInput.value = '';
-            clearSearchBtn.style.display = 'none';
-            suggestionsBox.style.display = 'none';
-            selectedIndex = -1;
-            currentSuggestions = [];
-            showWelcome();
-        }
-
-        window.addEventListener('DOMContentLoaded', showWelcome);
+        // ── Init ──
+        showWelcome();
     </script>
 </body>
 </html>
